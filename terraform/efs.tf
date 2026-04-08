@@ -1,6 +1,5 @@
 ###############################################################################
 # efs.tf — EFS filesystem for Grafana dashboard persistence
-# Created new (unique name), mounted into the existing subnet/SG
 ###############################################################################
 
 resource "aws_efs_file_system" "grafana" {
@@ -15,22 +14,29 @@ resource "aws_efs_file_system" "grafana" {
   }
 }
 
-# Mount target in the existing subnet (us-east-1a)
+# Mount target in first subnet (existing)
 resource "aws_efs_mount_target" "grafana" {
   file_system_id  = aws_efs_file_system.grafana.id
   subnet_id       = var.subnet_id
   security_groups = [var.security_group_id]
 }
 
-# EFS Access Point — scoped to /grafana directory with correct UID
+# Mount target in second subnet (AZ-b) — NEW
+resource "aws_efs_mount_target" "grafana_azb" {
+  file_system_id  = aws_efs_file_system.grafana.id
+  subnet_id       = "subnet-0a699b262130a98b7"  # sandbox_private_azb
+  security_groups = [var.security_group_id]
+}
+
+# EFS Access Point — scoped to /grafana directory
 resource "aws_efs_access_point" "grafana" {
   file_system_id = aws_efs_file_system.grafana.id
 
   root_directory {
     path = "/grafana"
     creation_info {
-      owner_gid   = 472   # grafana GID inside the container
-      owner_uid   = 472   # grafana UID inside the container
+      owner_gid   = 472
+      owner_uid   = 472
       permissions = "755"
     }
   }
