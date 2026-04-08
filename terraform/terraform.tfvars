@@ -15,7 +15,8 @@ subnet_id         = "subnet-0548c87344ac6f8a2"
 
 # ALB public subnets (for browser access to Grafana/Prometheus)
 public_subnet_ids = [
-  "subnet-04d2a16e59711c474"
+  "subnet-04d2a16e59711c474",
+  "subnet-0d062118b30606dce"
   # Add a second public subnet here if you have one for high availability
 ]
 
