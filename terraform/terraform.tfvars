@@ -25,7 +25,7 @@ ecr_base  = "584554046133.dkr.ecr.us-east-1.amazonaws.com/otel-staging"
 image_tag = "latest"
 
 # ⚠ REQUIRED: fill this after running scripts/01-setup.sh
-efs_filesystem_id = "FILL_AFTER_SETUP"
+efs_filesystem_id = "fs-07f6fd4f80dc0c8fd"
 
 # OTel Gateway (other team — don't change)
 otel_gateway_grpc = "otel-gateway-nlb-3b88104205cc8ef6.elb.us-east-1.amazonaws.com:4317"
