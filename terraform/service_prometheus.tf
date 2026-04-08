@@ -1,9 +1,5 @@
 ###############################################################################
 # service_prometheus.tf — Prometheus + Thanos Sidecar (single task)
-#
-# Two containers share a task so they share the prometheus-data volume.
-# Thanos sidecar uploads TSDB blocks to S3 and exposes Store API on :10901.
-# Prometheus receives remote_write from Tempo metrics generator.
 ###############################################################################
 
 resource "aws_ecs_task_definition" "prometheus" {
@@ -56,7 +52,6 @@ resource "aws_ecs_task_definition" "prometheus" {
     },
 
     # ── Container 2: Thanos Sidecar ────────────────────────────────────────────
-    # essential=false — task stays alive if sidecar crashes
     {
       name      = "thanos-sidecar"
       image     = "${var.ecr_base}/thanos:${var.image_tag}"
@@ -68,12 +63,12 @@ resource "aws_ecs_task_definition" "prometheus" {
         "--prometheus.url=http://localhost:9090",
         "--grpc-address=0.0.0.0:10901",
         "--http-address=0.0.0.0:10902",
-        "--objstore.config-file=/etc/thanos/bucket.yml",
+        "--objstore.config-file=/etc/thanos/bucket.yml"
       ]
 
       portMappings = [
         { containerPort = 10901, protocol = "tcp" },
-        { containerPort = 10902, protocol = "tcp" },
+        { containerPort = 10902, protocol = "tcp" }
       ]
 
       mountPoints = [
@@ -81,11 +76,10 @@ resource "aws_ecs_task_definition" "prometheus" {
       ]
 
       environment = [
-        { name = "S3_BUCKET",  value = var.s3_bucket  },
-        { name = "AWS_REGION", value = var.aws_region },
+        { name = "S3_BUCKET",  value = var.s3_bucket },
+        { name = "AWS_REGION", value = var.aws_region }
       ]
 
-      # Wait for prometheus to pass its health check
       dependsOn = [
         { containerName = "prometheus", condition = "HEALTHY" }
       ]
@@ -142,6 +136,6 @@ resource "aws_ecs_service" "prometheus" {
 
   depends_on = [
     aws_ecs_cluster_capacity_providers.main,
-    aws_lb_listener.prometheus_direct,
+    aws_lb_listener.prometheus_direct
   ]
 }
