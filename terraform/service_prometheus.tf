@@ -26,6 +26,7 @@ resource "aws_ecs_task_definition" "prometheus" {
       name      = "prometheus"
       image     = "${var.ecr_base}/prometheus:${var.image_tag}"
       essential = true
+      user      = "root"
 
       portMappings = [
         { containerPort = 9090, protocol = "tcp" }
