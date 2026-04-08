@@ -12,7 +12,7 @@ resource "aws_lb" "otel_staging" {
   internal           = false           # internet-facing for browser access
   load_balancer_type = "application"
   security_groups    = [var.security_group_id]
-  subnets            = subnets = var.public_subnet_ids  # add a second subnet if you have one
+  subnets            = var.public_subnet_ids  # add a second subnet if you have one
 
   enable_deletion_protection = false     # testing — easy to tear down
 
