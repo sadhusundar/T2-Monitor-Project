@@ -98,3 +98,24 @@ resource "aws_iam_role_policy" "task_s3" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "task_efs" {
+  name = "otel-staging-efs-access"
+  role = aws_iam_role.task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess",
+          "elasticfilesystem:DescribeMountTargets"
+        ]
+        Resource = "arn:aws:elasticfilesystem:${var.aws_region}:${data.aws_caller_identity.current.account_id}:file-system/fs-024599e51a908e3d3"
+      }
+    ]
+  })
+}
