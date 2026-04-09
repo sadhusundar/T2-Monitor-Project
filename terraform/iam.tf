@@ -98,3 +98,23 @@ resource "aws_iam_role_policy" "task_s3" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "efs_access" {
+  name = "EFSAccessPolicy"
+  role = aws_iam_role.task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}

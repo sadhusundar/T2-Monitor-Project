@@ -16,3 +16,7 @@ HTTP: http://otel-gateway-nlb-3b88104205cc8ef6.elb.us-east-1.amazonaws.com:4318
 gRPC: otel-gateway-nlb-3b88104205cc8ef6.elb.us-east-1.amazonaws.com:4317
 
 grafana-stack-lgtm.pem
+
+git add . && git commit -m "First change" && git push origin master
+
+chmod +x ./scripts/05-validate.sh
