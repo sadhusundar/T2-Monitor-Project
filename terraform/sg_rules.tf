@@ -4,6 +4,15 @@
 # We use aws_vpc_security_group_ingress_rule (not recreating the SG)
 ###############################################################################
 
+# ── Self-referencing rule — allow all traffic between instances in this SG ───
+# Required for ALB health checks and inter-service communication
+resource "aws_vpc_security_group_ingress_rule" "self_all" {
+  security_group_id            = var.security_group_id
+  description                  = "Allow all traffic between instances in this SG"
+  ip_protocol                  = "-1"
+  referenced_security_group_id = var.security_group_id
+}
+
 # ── Prometheus ────────────────────────────────────────────────────────────────
 resource "aws_vpc_security_group_ingress_rule" "prometheus" {
   security_group_id = var.security_group_id
