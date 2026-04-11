@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "grafana" {
       file_system_id          = aws_efs_file_system.grafana.id
       root_directory          = "/"
       transit_encryption      = "ENABLED"
-      transit_encryption_port = 2049
+      transit_encryption_port = 20049
 
       authorization_config {
         access_point_id = aws_efs_access_point.grafana.id
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "grafana" {
       name      = "grafana"
       image     = "${var.ecr_base}/grafana:${var.image_tag}"
       essential = true
-      user      = "472"   # grafana UID — must match EFS access point
+      user      = "root"
 
       portMappings = [
         { containerPort = 3000, protocol = "tcp" }
@@ -71,7 +71,7 @@ resource "aws_ecs_task_definition" "grafana" {
         interval    = 15
         timeout     = 5
         retries     = 3
-        startPeriod = 60
+        startPeriod = 120
       }
     }
   ])
@@ -88,6 +88,8 @@ resource "aws_ecs_service" "grafana" {
   task_definition = aws_ecs_task_definition.grafana.arn
   desired_count   = 1
   launch_type     = "EC2"
+
+  health_check_grace_period_seconds  = 300
 
   network_configuration {
     subnets          = [var.subnet_id]
