@@ -1,7 +1,6 @@
 ###############################################################################
 # service_grafana.tf — Grafana with EFS for dashboard persistence
 # Datasources are pre-provisioned via the baked-in datasources.yml
-# EFS access point scoped to /grafana with UID/GID 472 (grafana user)
 ###############################################################################
 
 resource "aws_ecs_task_definition" "grafana" {
@@ -18,15 +17,9 @@ resource "aws_ecs_task_definition" "grafana" {
     name = "grafana-efs"
 
     efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.grafana.id
-      root_directory          = "/"
-      transit_encryption      = "ENABLED"
-      transit_encryption_port = 20049
-
-      authorization_config {
-        access_point_id = aws_efs_access_point.grafana.id
-        iam             = "ENABLED"
-      }
+      file_system_id     = aws_efs_file_system.grafana.id
+      root_directory     = "/grafana"
+      transit_encryption = "DISABLED"
     }
   }
 
@@ -120,5 +113,3 @@ resource "aws_ecs_service" "grafana" {
     aws_efs_mount_target.grafana,
   ]
 }
-
-#needed
